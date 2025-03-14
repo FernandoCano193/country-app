@@ -1,9 +1,9 @@
-import { Component, inject, resource, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { of } from 'rxjs';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { CountrySearchInputComponent } from "../../components/country-search-input/country-search-input.component";
 import { CountryListComponent } from "../../components/country-list/country-list.component";
 import { CountryService } from '../../services/country.service';
-import type { Country } from '../../interfaces/country.interface';
-import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'by-capital-page',
@@ -15,19 +15,31 @@ export class ByCapitalPageComponent {
   countryService = inject(CountryService);
   query = signal<string>('');
 
-  countryResource = resource({
-    //regresa un objeto
-    request: () => ({ query: this.query() }),
+  //! Funciona con rxResource y observables
+    countryResource = rxResource({
+      request: () => ({ query: this.query() }),
+      loader: ({ request }) => {
+        if( !request.query ) return of([]);
 
-    //Se manda llamar cada que los volores del 'request' cambien
-    loader: async ({ request }) =>  {
-      if( !request.query ) return [];
+        return this.countryService.searchByCapital(request.query);
+      }
+    })
 
-      //firsValueFrom => permite pasar cualquier observable a una promesa
 
-      return await firstValueFrom(this.countryService.searchByCapital(request.query));
-    }
-  })
+  //! Funciona con resourse y promesas
+  // countryResource = resource({
+  //   //regresa un objeto
+  //   request: () => ({ query: this.query() }),
+
+  //   //Se manda llamar cada que los volores del 'request' cambien
+  //   loader: async ({ request }) =>  {
+  //     if( !request.query ) return [];
+
+  //     //firsValueFrom => permite pasar cualquier observable a una promesa
+
+  //     return await firstValueFrom(this.countryService.searchByCapital(request.query));
+  //   }
+  // })
 
   // // compatible con version de Angular >= 18
   // isLoading = signal(false);
