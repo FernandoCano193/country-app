@@ -26,4 +26,20 @@ export class CountryService {
         })
       );
   }
+
+  searchByCountry( query:string ) {
+    query = query.toLowerCase();
+
+    return this.http.get<RESTCountry[]>(`${API_URL}/name/${query}`)
+      .pipe(
+        map( resp => CountryMappers.mapRestCountriesToCountries(resp)),
+
+        //Manejo de errores
+        catchError( error => {
+          console.log('Error fetching ', error);
+
+          return throwError(() => Error(`No se pudo obtener paises con el query: ${query}`)); // Se debe de retornar el error
+        })
+      )
+  }
 }
