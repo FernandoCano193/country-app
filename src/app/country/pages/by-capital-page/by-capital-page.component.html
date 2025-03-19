@@ -1,7 +1,9 @@
 <country-search-input placeholder="Buscar por capital" (value)="query.set($event)"/>
 
-@if (countryResource.error()) {
-  <h3 class="text-error my-2">{{ countryResource.error() }}</h3>
-}
+<country-list
+  [countries]="countryResource.value() ?? []"
+  [errorMessage]="countryResource.error()"
+  [isLoading]="countryResource.isLoading()"
+  [isEmpty]="countryResource.value()?.length === 0"
+  />
 
-<country-list [countries]="countryResource.value() ?? []" />
