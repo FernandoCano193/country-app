@@ -9,4 +9,5 @@ import type { Country } from '../../../interfaces/country.interface';
 })
 export class CountryInformationComponent {
   country = input.required<Country>();
+  currentYear = new Date().getFullYear();
 }

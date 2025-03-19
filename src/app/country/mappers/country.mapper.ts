@@ -10,7 +10,9 @@ export class CountryMappers {
       flagSvg: restCountry.flags.svg,
       name: restCountry.translations['spa'].common ?? 'Nombre en Español no disponible',
       capital: restCountry.capital.join(', '),
-      population: restCountry.population
+      population: restCountry.population,
+      region: restCountry.region,
+      subRegion: restCountry.subregion
     }
   }
 
