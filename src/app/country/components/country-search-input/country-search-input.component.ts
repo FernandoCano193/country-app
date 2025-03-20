@@ -1,4 +1,4 @@
-import { Component, effect, input, output, signal } from '@angular/core';
+import { Component, effect, input, linkedSignal, output, signal } from '@angular/core';
 
 @Component({
   selector: 'country-search-input',
@@ -12,8 +12,9 @@ export class CountrySearchInputComponent {
 
   //recibe el placeholder como parámetro y se asigna 'Buscar' por defecto
   placeholder= input<string>('Buscar');
+  initialValue = input<string>();
 
-  inputValue = signal<string>('');
+  inputValue = linkedSignal<string>(() => this.initialValue() ?? '');
 
   debounceEffect = effect((onCleanup) => {
     //Angular detecta que hay una signal y cada vez que cambie se va a disparar el effect

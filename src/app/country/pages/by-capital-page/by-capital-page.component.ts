@@ -1,6 +1,8 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, linkedSignal, signal } from '@angular/core';
 import { of } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
+
 import { CountrySearchInputComponent } from "../../components/country-search-input/country-search-input.component";
 import { CountryListComponent } from "../../components/country-list/country-list.component";
 import { CountryService } from '../../services/country.service';
@@ -13,12 +15,19 @@ import { CountryService } from '../../services/country.service';
 export class ByCapitalPageComponent {
 
   countryService = inject(CountryService);
-  query = signal<string>('');
+
+  //Obtenemos la ruta de la página
+  activatedRoute = inject(ActivatedRoute);
+
+  queryParam = this.activatedRoute.snapshot.queryParamMap.get('query') ?? '';
+
+  query = linkedSignal<string>(() =>this.queryParam);
 
   //! Funciona con rxResource y observables
     countryResource = rxResource({
       request: () => ({ query: this.query() }),
       loader: ({ request }) => {
+        console.log({query: request.query});
         if( !request.query ) return of([]);
 
         return this.countryService.searchByCapital(request.query);
