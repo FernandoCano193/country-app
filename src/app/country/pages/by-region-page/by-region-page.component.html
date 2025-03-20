@@ -1,1 +1,15 @@
-<country-list [countries]="[]" />
+<h3 class="text-lg">Seleccione una región</h3>
+
+<section class="row mt-2 gap-4">
+  @for (region of regions; track region) {
+    <button class="btn btn-outline mx-2 cursor-pointer"
+    (click)="selectedRegion.set(region)"
+    [class.btn-primary]="selectedRegion() === region"
+    >{{ region }}</button>
+  }
+</section>
+
+<country-list [errorMessage]="regionResource.error()"
+  [isEmpty]="regionResource.value()?.length === 0"
+  [isLoading]="regionResource.isLoading()"
+  [countries]="regionResource.value() ?? []"  />
