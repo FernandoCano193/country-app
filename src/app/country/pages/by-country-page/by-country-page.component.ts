@@ -1,10 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, linkedSignal, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 
 import { CountrySearchInputComponent } from "../../components/country-search-input/country-search-input.component";
 import { CountryListComponent } from "../../components/country-list/country-list.component";
 import { CountryService } from '../../services/country.service';
 import { of } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'by-country-page',
@@ -13,13 +14,26 @@ import { of } from 'rxjs';
 })
 export class ByCountryPageComponent {
   countryService = inject(CountryService);
-  query = signal<string>('');
+
+  //Obtenemos la ruta de la página
+  activatedRoute = inject(ActivatedRoute);
+  router = inject(Router);
+
+  queryParam = this.activatedRoute.snapshot.queryParamMap.get('query') ?? '';
+
+  query = linkedSignal<string>(() =>this.queryParam);
 
   //! Funciona con rxResource y observables
   countryResource = rxResource({
     request: () => ({ query: this.query() }),
     loader: ({ request }) => {
+      // console.log({query: request.query});
       if( !request.query ) return of([]);
+
+      //actualizar el url
+      this.router.navigate(['/country/by-country'], {
+        queryParams: { query: request.query }
+      })
 
       return this.countryService.searchByCountry(request.query);
     }
